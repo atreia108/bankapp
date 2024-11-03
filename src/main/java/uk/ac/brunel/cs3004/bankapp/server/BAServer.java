@@ -4,9 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class BAServer {
+	public static final Logger LOGGER = LogManager.getLogger();
+	
 	private static String[] passwords = {"Hello", "12345", "password"};
 	private static int[] accounts = {1000, 1000, 1000};
-	public static final Logger LOGGER = LogManager.getLogger();
+	private static BATransactionManager transactionMgr;
 	
 	public static void main(String[] args) {
 		
@@ -48,9 +50,9 @@ public class BAServer {
 		}
 		
 		if (unknownClient)
-			LOGGER.info("`{}` balance was updated to `{}`.", clientId, amount);
-		else
 			LOGGER.warn("Attempt made to update balance of an unknown client.");
+		else
+			LOGGER.info("`{}` balance was updated to `{}`.", clientId, amount);
 	}
 	
 	private static String getPassword(String clientId) {
@@ -64,5 +66,9 @@ public class BAServer {
 		default:
 			return "Unknown client was requested.";
 		}
+	}
+	
+	public static BATransactionManager getTransactionManager() {
+		return transactionMgr;
 	}
 }

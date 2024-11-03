@@ -5,7 +5,7 @@ public class BATransactionManager {
 	private boolean inAccess = false;
 	private String accessingThread = "";
 	
-	public synchronized void processInput(String request) {
+	public synchronized String processInput(String request) {
 		// For all recognized operations, TRY to convert integer to string. 
 		// If not, log it as error and ask client to try again.
 		if (request.equalsIgnoreCase("add")) {
@@ -17,18 +17,20 @@ public class BATransactionManager {
 		} else {
 			// TODO: Any other case.
 		}
+		
+		return "Hello, World";
 	}
 	
 	public synchronized void addMoney(String clientId, int amount) {
 		int clientBalance = BAServer.getBalance(clientId);
 		BAServer.setBalance(clientId, clientBalance + amount);
-		BAServer.LOGGER.info("`{}` added `{}` to their account.", clientId, amount);
+		BAServer.LOGGER.info("`{}` added `{}` to their account", clientId, amount);
 	}
 	
 	public synchronized void subtractMoney(String clientId, int amount) {
 		int clientBalance = BAServer.getBalance(clientId);
 		BAServer.setBalance(clientId, clientBalance - amount);
-		BAServer.LOGGER.info("`{}` withdrew `{}` from their account.", clientId, amount);
+		BAServer.LOGGER.info("`{}` withdrew `{}` from their account", clientId, amount);
 	}
 	
 	public synchronized void transferMoney(String client1Id, String client2Id, int amount) {
@@ -42,11 +44,11 @@ public class BATransactionManager {
 	
 	public synchronized void acquireLock() {
 		String self = Thread.currentThread().getName();
-		BAServer.LOGGER.info("`{}` is attempting to get a lock.", self);
+		BAServer.LOGGER.info("`{}` is attempting to get a lock", self);
 		++threadsInQueue;
 		
 		while ( inAccess ) {
-			BAServer.LOGGER.info("`{}` is waiting for a lock as `{}` is currently making a transaction.",
+			BAServer.LOGGER.info("`{}` is waiting for a lock as `{}` is currently making a transaction",
 					self, accessingThread);
 			try {
 				wait();
@@ -56,14 +58,14 @@ public class BATransactionManager {
 		--threadsInQueue;
 		inAccess = true;
 		accessingThread = self;
-		BAServer.LOGGER.info("`{}` has got a lock.", self);
+		BAServer.LOGGER.info("`{}` has got a lock", self);
 	}
 	
 	public synchronized void releaseLock() {
 		String self = Thread.currentThread().getName();
 		inAccess = false;
 		notifyAll();
-		BAServer.LOGGER.info("`{}` has released the lock.", self);
+		BAServer.LOGGER.info("`{}` has released the lock", self);
 	}
 
 	public int getThreadsInQueue() {
