@@ -5,32 +5,51 @@ public class BATransactionManager {
 	private boolean inAccess = false;
 	private String accessingThread = "";
 	
-	public synchronized String processInput(String request) {
-		// For all recognized operations, TRY to convert integer to string. 
-		// If not, log it as error and ask client to try again.
-		if (request.equalsIgnoreCase("add")) {
-			
-		} else if (request.equalsIgnoreCase("subtract")) {
-			
-		} else if (request.equalsIgnoreCase("transfer")) {
-			
-		} else {
-			// TODO: Any other case.
-		}
+	public synchronized String processInput(String clientId, String request) {
+		String[] requestDetails = request.split(" ");
+		String response = "";
 		
-		return "Hello, World";
+		if (requestDetails[0].equalsIgnoreCase("add")) {
+			try {
+				addMoney(clientId, Integer.parseInt(requestDetails[1]));
+				BAServer.LOGGER.info("Transaction Request Processed: ADD");
+			} catch(Exception e) {
+				response = "You submitted an unrecognized transaction request. Please provide a valid request!";
+				BAServer.LOGGER.error("Transaction Request Denied: Exception encountered", e);
+				return response;
+			}
+		} else if (requestDetails[0].equalsIgnoreCase("subtract")) {
+			try {
+				subtractMoney(clientId, Integer.parseInt(requestDetails[1]));
+				BAServer.LOGGER.info("Transaction Request Processed: SUBTRACT");
+			} catch (Exception e) {
+				response = "You submitted an unrecognized transaction request. Please provide a valid request!";
+				BAServer.LOGGER.error("Transaction Request Denied: Exception encountered", e);
+				return response;
+			}
+		} else if (requestDetails[0].equalsIgnoreCase("transfer")) {
+			try {
+				transferMoney(clientId, requestDetails[1], Integer.parseInt(requestDetails[2]));
+				BAServer.LOGGER.info("Transaction Request Processed: TRANSFER");
+			} catch (Exception e) {
+				response = "You submitted an unrecognized transaction request. Please provide a valid request!";
+				BAServer.LOGGER.error("Transaction Request Denied: Exception encountered", e);
+				return response;
+			}
+		}
+		return response;
 	}
 	
 	public synchronized void addMoney(String clientId, int amount) {
 		int clientBalance = BAServer.getBalance(clientId);
 		BAServer.setBalance(clientId, clientBalance + amount);
-		BAServer.LOGGER.info("`{}` added `{}` to their account", clientId, amount);
+		BAServer.LOGGER.info("`{}` added {} to their account", clientId, amount);
 	}
 	
 	public synchronized void subtractMoney(String clientId, int amount) {
 		int clientBalance = BAServer.getBalance(clientId);
 		BAServer.setBalance(clientId, clientBalance - amount);
-		BAServer.LOGGER.info("`{}` withdrew `{}` from their account", clientId, amount);
+		BAServer.LOGGER.info("`{}` withdrew {} from their account", clientId, amount);
 	}
 	
 	public synchronized void transferMoney(String client1Id, String client2Id, int amount) {
@@ -39,7 +58,7 @@ public class BATransactionManager {
 		
 		BAServer.setBalance(client1Id, client1Balance - amount);
 		BAServer.setBalance(client2Id, client2Balance + amount);
-		BAServer.LOGGER.info("`{}` transferred `{}` to `{}`", client1Id, amount, client2Id);
+		BAServer.LOGGER.info("`{}` transferred {} to `{}`", client1Id, amount, client2Id);
 	}
 	
 	public synchronized void acquireLock() {

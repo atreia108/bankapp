@@ -38,7 +38,7 @@ public class BAServerThread extends Thread {
 			while ((input = stdIn.readLine()) != null) {
 				try {
 					transactionMgr.acquireLock();
-					response = transactionMgr.processInput(input);
+					response = transactionMgr.processInput(clientId, input);
 					transactionMgr.releaseLock();
 				} catch (Exception e) {
 					BAServer.LOGGER.error("Exception encountered", e);
