@@ -12,6 +12,7 @@ public class BATransactionManager {
 		if (requestDetails[0].equalsIgnoreCase("add")) {
 			try {
 				addMoney(clientId, Integer.parseInt(requestDetails[1]));
+				response = requestDetails[1] + " was added to " + clientId + "\'s account balance.";
 				BAServer.LOGGER.info("Transaction Request Processed: ADD");
 			} catch(Exception e) {
 				response = "You submitted an unrecognized transaction request. Please provide a valid request!";
@@ -21,6 +22,7 @@ public class BATransactionManager {
 		} else if (requestDetails[0].equalsIgnoreCase("subtract")) {
 			try {
 				subtractMoney(clientId, Integer.parseInt(requestDetails[1]));
+				response = requestDetails[1] + " was subtracted from " + clientId + "\'s account balance.";
 				BAServer.LOGGER.info("Transaction Request Processed: SUBTRACT");
 			} catch (Exception e) {
 				response = "You submitted an unrecognized transaction request. Please provide a valid request!";
@@ -29,7 +31,14 @@ public class BATransactionManager {
 			}
 		} else if (requestDetails[0].equalsIgnoreCase("transfer")) {
 			try {
+				if (!BAServer.verifyClientId(requestDetails[1])) {
+					response = "The client you attempted to transfer balance to does not exist!";
+					BAServer.LOGGER.info("Transaction Request Denied: TRANSFER to unknown client ID `{}` attempted", requestDetails[1]);
+					return response;
+				}
+				
 				transferMoney(clientId, requestDetails[1], Integer.parseInt(requestDetails[2]));
+				response = clientId + " transferred " + requestDetails[2] + " to " + requestDetails[1] + "\'s account.";
 				BAServer.LOGGER.info("Transaction Request Processed: TRANSFER");
 			} catch (Exception e) {
 				response = "You submitted an unrecognized transaction request. Please provide a valid request!";

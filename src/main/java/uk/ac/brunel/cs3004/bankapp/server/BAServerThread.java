@@ -7,49 +7,85 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class BAServerThread extends Thread {
-	private boolean authState;
+	private boolean authStatus;
 	private Socket clientSocket;
 	private String clientId;
 	private String currentThreadName;
 	private BATransactionManager transactionMgr;
 	
-	public BAServerThread(Socket clientSocket, String clientId, String threadName) {
-		transactionMgr = BAServer.getTransactionManager();
+	public BAServerThread(Socket clientSocket, String threadName, BATransactionManager transactionMgr) {
+		super(threadName);
+		this.transactionMgr = transactionMgr;
 		this.clientSocket = clientSocket;
-		this.clientId = clientId;
 		this.currentThreadName = threadName;
-		authState = false;
+		authStatus = false;
 	}
 	
 	public void run() {
 		BAServer.LOGGER.info("`{}` initialized", currentThreadName);
 		try {
-			BufferedReader stdIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			PrintWriter stdOut = new PrintWriter(clientSocket.getOutputStream(), true);
-			String input, response;
+			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 			
-			while (!authState) {
-				stdOut.println("Welcome to the WLFB Bank Application, CLIENT " + clientId + ".\n"
-						+ "Please login by entering your password below.");
-				String attempt = stdIn.readLine();
-				if (BAServer.authenticate(clientId, attempt)) authState = true;
+			
+			while (!authStatus) {
+				String clientNameAttempt = in.readLine();
+				
+				if (!BAServer.verifyClientId(clientNameAttempt)) { 
+					out.println("UNKNOWN");
+					BAServer.LOGGER.info("LOGIN: User tried to authenticate as unknown client ID `{}`", clientNameAttempt);
+					continue; 
+				} else {
+					out.println(clientNameAttempt);
+					BAServer.LOGGER.info("LOGIN: User is trying to authenticate as known client ID `{}`", clientNameAttempt);
+				}
+				
+				boolean clientPasswordAttempt = BAServer.authenticate(clientNameAttempt, in.readLine());
+				
+				if (clientPasswordAttempt) {
+					authStatus = true;
+					this.clientId = clientNameAttempt;
+					out.println("SUCCESSFUL");
+					BAServer.LOGGER.info("LOGIN: User was successfully authenticated as `{}`", clientNameAttempt);
+				} else {
+					out.println("REJECTED");
+					BAServer.LOGGER.info("LOGIN: User could not be successfully authenticated as `{}`", clientNameAttempt);
+				}
 			}
 			
-			while ((input = stdIn.readLine()) != null) {
+			String operation, response;
+			
+			while ((operation = in.readLine()) != null) {
 				try {
 					transactionMgr.acquireLock();
-					response = transactionMgr.processInput(clientId, input);
+					response = transactionMgr.processInput(clientId, operation);
+					out.println(response);
 					transactionMgr.releaseLock();
 				} catch (Exception e) {
 					BAServer.LOGGER.error("Exception encountered", e);
 				}
 			}
 			
-			stdOut.close();
-			stdIn.close();
+			in.close();
+			out.close();
 			clientSocket.close();
 		} catch (IOException e) {
 			BAServer.LOGGER.error("Exception encountered", e);
 		}
 	}
+	/*
+	public String verifyClientId(String clientIdAttempt) {
+		try {
+			if (clientIdAttempt.equalsIgnoreCase("CLIENTA") ||
+					clientIdAttempt.equalsIgnoreCase("CLIENTB") ||
+					clientIdAttempt.equalsIgnoreCase("CLIENTC")	) {
+					return clientIdAttempt.toUpperCase();
+			} else {
+				return "UNKNOWN";
+			}
+		} catch (Exception e) {
+			return "UNKNOWN";
+		}
+	}
+	*/
 }

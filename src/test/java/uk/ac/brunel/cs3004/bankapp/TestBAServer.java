@@ -56,4 +56,12 @@ public class TestBAServer {
 		assertEquals("You submitted an unrecognized transaction request. Please provide a valid request!",
 				transactionMgr.processInput("CLIENTC", invalid002));
 	}
+	
+	@Test
+	public void testValidClientName() {
+		assertTrue(BAServer.verifyClientId("CLIENTA"));
+		assertTrue(BAServer.verifyClientId("CLIENTB"));
+		assertTrue(BAServer.verifyClientId("CLIENTC"));
+		assertFalse(BAServer.verifyClientId("CLIENTD"));
+	}
 }
