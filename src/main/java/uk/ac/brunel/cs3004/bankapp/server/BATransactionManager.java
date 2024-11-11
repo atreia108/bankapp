@@ -45,7 +45,10 @@ public class BATransactionManager {
 				BAServer.LOGGER.error("Transaction Request Denied: Exception encountered", e);
 				return response;
 			}
+		} else {
+			return "You submitted an unrecognized transaction request. Please provide a valid request!";
 		}
+		
 		return response;
 	}
 	
@@ -73,13 +76,16 @@ public class BATransactionManager {
 	public synchronized void acquireLock() {
 		String self = Thread.currentThread().getName();
 		BAServer.LOGGER.info("`{}` is attempting to get a lock", self);
+		System.out.println("I AM HERE AND ABOUT TO MAYBE WAIT.");
 		++threadsInQueue;
 		
 		while ( inAccess ) {
+			
 			BAServer.LOGGER.info("`{}` is waiting for a lock as `{}` is currently making a transaction",
 					self, accessingThread);
 			try {
 				wait();
+				System.out.println("I AM HERE AND WAITING");
 			} catch (InterruptedException e) { BAServer.LOGGER.warn("Exception encountered", e); }
 		}
 		

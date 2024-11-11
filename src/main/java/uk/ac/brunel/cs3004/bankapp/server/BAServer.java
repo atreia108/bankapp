@@ -10,8 +10,11 @@ public class BAServer {
 	public static final Logger LOGGER = LogManager.getLogger();
 	
 	private static String[] passwords = {"Hello", "12345", "password"};
-	private static int[] accounts = {1000, 1000, 1000};
-	private static BATransactionManager transactionMgr;
+	
+	private static int clientABalance = 1000;
+	private static int clientBBalance = 1000;
+	private static int clientCBalance = 1000;
+	
 	private static final int BAServerPort = 4545;
 	
 	public static void main(String[] args) throws IOException {
@@ -45,11 +48,11 @@ public class BAServer {
 	public static int getBalance(String clientId) {
 		switch (clientId) {
 		case "CLIENTA":
-			return accounts[0];
+			return clientABalance;
 		case "CLIENTB":
-			return accounts[1];
+			return clientBBalance;
 		case "CLIENTC":
-			return accounts[2];
+			return clientCBalance;
 		default:
 			return Integer.MIN_VALUE;
 		}
@@ -57,16 +60,20 @@ public class BAServer {
 	
 	public static void setBalance(String clientId, int amount) {
 		boolean unknownClient = false;
+		int oldAmount = 0;
 		
 		switch (clientId) {
 		case "CLIENTA":
-			accounts[0] = amount;
+			oldAmount = clientABalance;
+			clientABalance = amount;
 			break;
 		case "CLIENTB":
-			accounts[1] = amount;
+			oldAmount = clientBBalance;
+			clientBBalance = amount;
 			break;
 		case "CLIENTC":
-			accounts[2] = amount;
+			oldAmount = clientCBalance;
+			clientCBalance = amount;
 			break;
 		default:
 			unknownClient = true;
@@ -76,7 +83,7 @@ public class BAServer {
 		if (unknownClient)
 			LOGGER.warn("Attempt made to update balance of an unknown client.");
 		else
-			LOGGER.info("`{}` balance was updated to `{}`.", clientId, amount);
+			LOGGER.info("`{}` balance was updated from {} to {}.", clientId, oldAmount, amount);
 	}
 	
 	private static String getPassword(String clientId) {
@@ -99,6 +106,7 @@ public class BAServer {
 			return true;
 		} else return false;
 	}
+	
 	public static int getServerPort() {
 		return BAServerPort;
 	}

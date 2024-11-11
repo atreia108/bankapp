@@ -56,8 +56,12 @@ public class BAClient {
 			System.out.print("> ");
 			String clientPasswordAttempt = stdIn.readLine();
 			out.println(clientPasswordAttempt);
+			LOGGER.info("CLIENT: Sent \"{}\" to server", clientPasswordAttempt);
 			
-			if (in.readLine().equals("REJECTED")) {
+			String serverPasswordResponse = in.readLine();
+			LOGGER.info("SERVER: Responded with \"{}\" to client", serverPasswordResponse);
+			
+			if (serverPasswordResponse.equals("REJECTED")) {
 				System.out.println("The password is incorrect. Please try again.");
 				continue;
 			}

@@ -50,7 +50,7 @@ public class TestBAServer {
 		assertEquals(1064, BAServer.getBalance("CLIENTA"));
 		assertEquals(744, BAServer.getBalance("CLIENTB"));
 		
-		assertEquals("You submitted an unrecognized transaction request. Please provide a valid request!",
+		assertEquals("The client you attempted to transfer balance to does not exist!",
 				transactionMgr.processInput("CLIENTA", invalid001));
 		
 		assertEquals("You submitted an unrecognized transaction request. Please provide a valid request!",

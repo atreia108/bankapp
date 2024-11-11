@@ -73,19 +73,4 @@ public class BAServerThread extends Thread {
 			BAServer.LOGGER.error("Exception encountered", e);
 		}
 	}
-	/*
-	public String verifyClientId(String clientIdAttempt) {
-		try {
-			if (clientIdAttempt.equalsIgnoreCase("CLIENTA") ||
-					clientIdAttempt.equalsIgnoreCase("CLIENTB") ||
-					clientIdAttempt.equalsIgnoreCase("CLIENTC")	) {
-					return clientIdAttempt.toUpperCase();
-			} else {
-				return "UNKNOWN";
-			}
-		} catch (Exception e) {
-			return "UNKNOWN";
-		}
-	}
-	*/
 }
