@@ -71,7 +71,7 @@ public class BAClient {
 		}
 		
 		while (true) {
-			System.out.println("What operation would you like to execute?\n1. ADD BALANCE\n2. SUBTRACT BALANCE\n3. TRANSFER BALANCE");
+			System.out.println("What operation would you like to execute?\n1. ADD BALANCE\n2. SUBTRACT BALANCE\n3. TRANSFER BALANCE\n4. VIEW BALANCE");
 			String operation = stdIn.readLine();
 			
 			if (operation.equalsIgnoreCase("EXIT")) {

@@ -45,6 +45,9 @@ public class BATransactionManager {
 				BAServer.LOGGER.error("Transaction Request Denied: Exception encountered", e);
 				return response;
 			}
+		} else if (requestDetails[0].equalsIgnoreCase("view")) {
+			response = "CLIENTA (YOU) has a balance of " + BAServer.getBalance(clientId) + ".";
+			return response ;
 		} else {
 			return "You submitted an unrecognized transaction request. Please provide a valid request!";
 		}
@@ -95,8 +98,9 @@ public class BATransactionManager {
 		BAServer.LOGGER.info("`{}` has got a lock", self);
 	}
 	
-	public synchronized void releaseLock() {
+	public synchronized void releaseLock() throws InterruptedException {
 		String self = Thread.currentThread().getName();
+		Thread.sleep(10000);
 		inAccess = false;
 		notifyAll();
 		BAServer.LOGGER.info("`{}` has released the lock", self);
