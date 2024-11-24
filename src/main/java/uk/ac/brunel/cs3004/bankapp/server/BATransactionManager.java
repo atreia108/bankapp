@@ -1,5 +1,11 @@
 package uk.ac.brunel.cs3004.bankapp.server;
 
+/***
+ * A shared object that a BAServerThread instance must own to execute transactions on behalf of its client.
+ * @author Hridyanshu Aatreya
+ * @version 1.0
+ */
+
 public class BATransactionManager {
 	private int threadsInQueue = 0;
 	private boolean inAccess = false;
@@ -46,7 +52,7 @@ public class BATransactionManager {
 				return response;
 			}
 		} else if (requestDetails[0].equalsIgnoreCase("view")) {
-			response = "CLIENTA (YOU) has a balance of " + BAServer.getBalance(clientId) + ".";
+			response = "You (" + clientId + ") have a balance of " + BAServer.getBalance(clientId) + ".";
 			return response ;
 		} else {
 			return "You submitted an unrecognized transaction request. Please provide a valid request!";
@@ -79,7 +85,7 @@ public class BATransactionManager {
 	public synchronized void acquireLock() {
 		String self = Thread.currentThread().getName();
 		BAServer.LOGGER.info("`{}` is attempting to get a lock", self);
-		System.out.println("I AM HERE AND ABOUT TO MAYBE WAIT.");
+		
 		++threadsInQueue;
 		
 		while ( inAccess ) {
@@ -88,7 +94,6 @@ public class BATransactionManager {
 					self, accessingThread);
 			try {
 				wait();
-				System.out.println("I AM HERE AND WAITING");
 			} catch (InterruptedException e) { BAServer.LOGGER.warn("Exception encountered", e); }
 		}
 		
@@ -98,9 +103,8 @@ public class BATransactionManager {
 		BAServer.LOGGER.info("`{}` has got a lock", self);
 	}
 	
-	public synchronized void releaseLock() throws InterruptedException {
+	public synchronized void releaseLock() {
 		String self = Thread.currentThread().getName();
-		Thread.sleep(10000);
 		inAccess = false;
 		notifyAll();
 		BAServer.LOGGER.info("`{}` has released the lock", self);

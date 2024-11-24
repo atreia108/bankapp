@@ -6,6 +6,12 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/***
+ * A server thread instance that deals with an incoming connection.
+ * @author Hridyanshu Aatreya
+ * @version 1.0
+ */
+
 public class BAServerThread extends Thread {
 	private boolean authStatus;
 	private Socket clientSocket;

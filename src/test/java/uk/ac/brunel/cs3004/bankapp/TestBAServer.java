@@ -16,14 +16,14 @@ public class TestBAServer {
 	
 	@Test
 	public void testPasswordRetrieval() {
-		assertTrue(BAServer.authenticate("CLIENTA", PASSWORD_CLIENT_A));
-		assertTrue(BAServer.authenticate("CLIENTB", PASSWORD_CLIENT_B));
-		assertTrue(BAServer.authenticate("CLIENTC", PASSWORD_CLIENT_C));
+		assertTrue(BAServer.authenticate("A", PASSWORD_CLIENT_A));
+		assertTrue(BAServer.authenticate("B", PASSWORD_CLIENT_B));
+		assertTrue(BAServer.authenticate("C", PASSWORD_CLIENT_C));
 		
-		assertFalse(BAServer.authenticate("CLIENTA", "hell0"));
-		assertFalse(BAServer.authenticate("CLIENTB", "1"));
-		assertFalse(BAServer.authenticate("CLIENTC", "Pittsburgh"));
-		assertFalse(BAServer.authenticate("CLIENTA", null));
+		assertFalse(BAServer.authenticate("A", "hell0"));
+		assertFalse(BAServer.authenticate("B", "1"));
+		assertFalse(BAServer.authenticate("C", "Pittsburgh"));
+		assertFalse(BAServer.authenticate("A", null));
 	}
 
 	@Test
@@ -35,33 +35,33 @@ public class TestBAServer {
 		String valid004 = "subtract 200";
 		String valid005 = "SUBTRACT 250";
 		String valid006 = "SubtraCT 301";
-		String valid007 = "Transfer CLIENTA 256";
-		String valid008 = "TRANSFER CLIENTB 512";
-		String valid009 = "TraNSFer CLIENTB 1024";
+		String valid007 = "Transfer A 256";
+		String valid008 = "TRANSFER B 512";
+		String valid009 = "TraNSFer B 1024";
 		
 		String invalid001 = "Transfer 256";
 		String invalid002 = "subtract one";
 		
-		transactionMgr.processInput("CLIENTA", valid001);
-		assertEquals(1008, BAServer.getBalance("CLIENTA"));
-		transactionMgr.processInput("CLIENTA", valid004);
-		assertEquals(808, BAServer.getBalance("CLIENTA"));
-		transactionMgr.processInput("CLIENTB", valid007);
-		assertEquals(1064, BAServer.getBalance("CLIENTA"));
-		assertEquals(744, BAServer.getBalance("CLIENTB"));
+		transactionMgr.processInput("A", valid001);
+		assertEquals(1008, BAServer.getBalance("A"));
+		transactionMgr.processInput("A", valid004);
+		assertEquals(808, BAServer.getBalance("A"));
+		transactionMgr.processInput("B", valid007);
+		assertEquals(1064, BAServer.getBalance("A"));
+		assertEquals(744, BAServer.getBalance("B"));
 		
 		assertEquals("The client you attempted to transfer balance to does not exist!",
-				transactionMgr.processInput("CLIENTA", invalid001));
+				transactionMgr.processInput("A", invalid001));
 		
 		assertEquals("You submitted an unrecognized transaction request. Please provide a valid request!",
-				transactionMgr.processInput("CLIENTC", invalid002));
+				transactionMgr.processInput("C", invalid002));
 	}
 	
 	@Test
 	public void testValidClientName() {
-		assertTrue(BAServer.verifyClientId("CLIENTA"));
-		assertTrue(BAServer.verifyClientId("CLIENTB"));
-		assertTrue(BAServer.verifyClientId("CLIENTC"));
-		assertFalse(BAServer.verifyClientId("CLIENTD"));
+		assertTrue(BAServer.verifyClientId("A"));
+		assertTrue(BAServer.verifyClientId("B"));
+		assertTrue(BAServer.verifyClientId("C"));
+		assertFalse(BAServer.verifyClientId("D"));
 	}
 }

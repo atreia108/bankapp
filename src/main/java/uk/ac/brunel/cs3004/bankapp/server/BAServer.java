@@ -6,14 +6,20 @@ import java.net.ServerSocket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/***
+ * The primary server class that launches the server-side application.
+ * @author Hridyanshu Aatreya
+ * @version 1.0
+ */
+
 public class BAServer {
 	public static final Logger LOGGER = LogManager.getLogger();
 	
 	private static String[] passwords = {"Hello", "12345", "password"};
 	
-	private static int clientABalance = 1000;
-	private static int clientBBalance = 1000;
-	private static int clientCBalance = 1000;
+	private static int balanceA = 1000;
+	private static int balanceB = 1000;
+	private static int balanceC = 1000;
 	
 	private static final int BAServerPort = 4545;
 	
@@ -45,14 +51,27 @@ public class BAServer {
 		return (getPassword(clientId).equals(password) ? true : false);
 	}
 
+	private static String getPassword(String clientId) {
+		switch (clientId) {
+		case "A":
+			return passwords[0];
+		case "B":
+			return passwords[1];
+		case "C":
+			return passwords[2];
+		default:
+			return "Unknown client was requested.";
+		}
+	}
+	
 	public static int getBalance(String clientId) {
 		switch (clientId) {
-		case "CLIENTA":
-			return clientABalance;
-		case "CLIENTB":
-			return clientBBalance;
-		case "CLIENTC":
-			return clientCBalance;
+		case "A":
+			return balanceA;
+		case "B":
+			return balanceB;
+		case "C":
+			return balanceC;
 		default:
 			return Integer.MIN_VALUE;
 		}
@@ -63,17 +82,17 @@ public class BAServer {
 		int oldAmount = 0;
 		
 		switch (clientId) {
-		case "CLIENTA":
-			oldAmount = clientABalance;
-			clientABalance = amount;
+		case "A":
+			oldAmount = balanceA;
+			balanceA = amount;
 			break;
-		case "CLIENTB":
-			oldAmount = clientBBalance;
-			clientBBalance = amount;
+		case "B":
+			oldAmount = balanceB;
+			balanceB = amount;
 			break;
-		case "CLIENTC":
-			oldAmount = clientCBalance;
-			clientCBalance = amount;
+		case "C":
+			oldAmount = balanceC;
+			balanceC = amount;
 			break;
 		default:
 			unknownClient = true;
@@ -83,26 +102,13 @@ public class BAServer {
 		if (unknownClient)
 			LOGGER.warn("Attempt made to update balance of an unknown client.");
 		else
-			LOGGER.info("`{}` balance was updated from {} to {}.", clientId, oldAmount, amount);
-	}
-	
-	private static String getPassword(String clientId) {
-		switch (clientId) {
-		case "CLIENTA":
-			return passwords[0];
-		case "CLIENTB":
-			return passwords[1];
-		case "CLIENTC":
-			return passwords[2];
-		default:
-			return "Unknown client was requested.";
-		}
+			LOGGER.info("`{}`'s balance was updated from {} to {}.", clientId, oldAmount, amount);
 	}
 	
 	public static boolean verifyClientId(String clientId) {
-		if (clientId.equalsIgnoreCase("CLIENTA") || 
-			clientId.equalsIgnoreCase("CLIENTB") ||
-			clientId.equalsIgnoreCase("CLIENTC")) {
+		if (clientId.equalsIgnoreCase("A") || 
+			clientId.equalsIgnoreCase("B") ||
+			clientId.equalsIgnoreCase("C")) {
 			return true;
 		} else return false;
 	}

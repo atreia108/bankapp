@@ -12,6 +12,12 @@ import org.apache.logging.log4j.Logger;
 
 import uk.ac.brunel.cs3004.bankapp.server.BAServer;
 
+/***
+ * The class that launches the client-side application.
+ * @author Hridyanshu Aatreya
+ * @version 1.0
+ */
+
 public class BAClient {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int BAServerPort = BAServer.getServerPort();
